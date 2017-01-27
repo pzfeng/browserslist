@@ -2,10 +2,8 @@ var path = require('path');
 var e2c  = require('electron-to-chromium/versions');
 var fs   = require('fs');
 
-var caniuse = require('caniuse-db/data.json').agents;
-Object.keys(caniuse).forEach(function (key) {
-    caniuse[key].versions = caniuse[key].versions.filter(Boolean);
-});
+var caniuse = require('caniuse-lite').agents;
+var region = require('caniuse-lite').region;
 
 var FLOAT_RANGE = /^\d+(\.\d+)?(-\d+(\.\d+)?)*$/;
 var IS_SECTION = /^\s*\[(.+)\]\s*$/;
@@ -249,10 +247,10 @@ var normalizeVersion = function (data, version) {
 var loadCountryStatistics = function (country) {
     if ( !browserslist.usage[country] ) {
         var usage = { };
-        var data = require(
-            'caniuse-db/region-usage-json/' + country + '.json');
-        for ( var i in data.data ) {
-            fillUsage(usage, i, data.data[i]);
+        var data = region(require(
+            'caniuse-lite/data/region-usage-json/' + country + '.json'));
+        for ( var i in data ) {
+            fillUsage(usage, i, data[i]);
         }
         browserslist.usage[country] = usage;
     }
